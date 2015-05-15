@@ -1,0 +1,6 @@
+{ 
+  "programs":{
+    "baby":["resources/baby"],
+    "sleeper":["resources/sleeper"]
+  }
+}

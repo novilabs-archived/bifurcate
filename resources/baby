@@ -1,0 +1,12 @@
+#!/bin/bash
+set -eou pipefail
+
+for i in $(seq 10 -1 0); do
+	echo "ZZzzz $i"
+	sleep 1
+done
+
+echo "WAH"
+sleep 1
+echo "WAH"
+exit 11
