@@ -1,6 +1,11 @@
 { 
   "programs":{
-    "baby":["resources/baby","{{ env "BABY_NAME" }}"],
-    "sleeper":["resources/sleeper"]
+    "baby":{
+      "requires":[{"file":"baby-sleep"}],
+      "args":["resources/baby","{{ env "BABY_NAME" }}"]
+    },
+    "sleeper":{
+      "args":["resources/sleeper"]
+    }
   }
 }

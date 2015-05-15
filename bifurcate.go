@@ -10,13 +10,51 @@ import (
 	"os/signal"
 	"syscall"
 	"text/template"
+	"time"
 )
 
 type Configuration struct {
-	Programs map[string][]string
+	Programs map[string]ConfigurationProgram
 }
 
-func waitFor(name string, cmd *exec.Cmd, quit chan int) {
+type ConfigurationProgram struct {
+	Args     []string
+	Requires []ConfigurationProgramRequires
+}
+
+type ConfigurationProgramRequires struct {
+	File string
+}
+
+func waitForRequires(name string, requires []ConfigurationProgramRequires) {
+	success := false
+	for !success {
+		success = true
+		for _, req := range requires {
+			if req.File != "" {
+				filename := req.File
+				if _, err := os.Stat(filename); os.IsNotExist(err) {
+					fmt.Println(filename, "Not found")
+					success = false
+				} else {
+					fmt.Println("Found", filename)
+				}
+			}
+		}
+
+		if !success {
+			fmt.Println("Still waiting on", name, "requires")
+			time.Sleep(1 * time.Second)
+		}
+	}
+}
+
+func waitFor(name string, requires []ConfigurationProgramRequires, cmd *exec.Cmd, quit chan int) {
+	if len(requires) > 0 {
+		fmt.Println("Making sure that all requirements are good for", name)
+		waitForRequires(name, requires)
+	}
+
 	fmt.Println("Running", name, "cmd:", cmd.Args)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
@@ -87,19 +125,20 @@ func main() {
 	var cmds []*exec.Cmd
 
 	// check validity
-	for name, cmdArgs := range configuration.Programs {
-		if len(cmdArgs) <= 0 {
+	for name, program := range configuration.Programs {
+		if len(program.Args) <= 0 {
 			fmt.Println("Unable to run empty command", name)
 			os.Exit(1)
 		}
 	}
 
 	// run them
-	for name, cmdArgs := range configuration.Programs {
+	for name, program := range configuration.Programs {
+		cmdArgs := program.Args
 		filePath := cmdArgs[0]
 		cmd := exec.Command(filePath, cmdArgs[1:]...)
 		cmds = append(cmds, cmd)
-		go waitFor(name, cmd, routineQuit)
+		go waitFor(name, program.Requires, cmd, routineQuit)
 	}
 
 	// catch any and all signals and forward them to all child commands
