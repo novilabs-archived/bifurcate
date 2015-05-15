@@ -1,8 +1,10 @@
 #!/bin/bash
 set -eou pipefail
 
+NAME=${1:-name}
+
 for i in $(seq 10 -1 0); do
-	>&2 echo "ZZzzz $i"
+	>&2 echo "$NAME: ZZzzz $i"
 	sleep 1
 done
 

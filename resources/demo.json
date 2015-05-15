@@ -1,6 +1,6 @@
 { 
   "programs":{
-    "baby":["resources/baby"],
+    "baby":["resources/baby","{{ env "BABY_NAME" }}"],
     "sleeper":["resources/sleeper"]
   }
 }

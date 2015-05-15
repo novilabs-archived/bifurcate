@@ -1,12 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"os/signal"
 	"syscall"
+	"text/template"
 )
 
 type Configuration struct {
@@ -37,23 +40,46 @@ func waitFor(name string, cmd *exec.Cmd, quit chan int) {
 	}
 }
 
-func main() {
+func readConfiguration(configFilePath string) Configuration {
+	// read config file in as string
+	configFileBytes, err := ioutil.ReadFile(configFilePath)
+	if err != nil {
+		fmt.Println("Unable to read config", configFilePath, err)
+		os.Exit(1)
+	}
 
+	// convert template file into json
+	var doc bytes.Buffer
+	funcMap := template.FuncMap{
+		"env": os.Getenv,
+	}
+	t, templateError := template.New("config").Funcs(funcMap).Parse(string(configFileBytes))
+	if templateError != nil {
+		fmt.Println("Error reading template", configFilePath, templateError)
+		os.Exit(1)
+	}
+	t.Execute(&doc, nil)
+
+	// read json into configuration object
+	configuration := Configuration{}
+	err = json.Unmarshal([]byte(doc.String()), &configuration)
+	if err != nil {
+		fmt.Println("error parsing config", configFilePath, err)
+		os.Exit(1)
+	}
+	return configuration
+}
+
+func main() {
 	args := os.Args
 	if len(args) != 2 {
 		fmt.Println("Please pass the configuration file to use as the first argument")
 		os.Exit(1)
 	}
 	configFilePath := args[1]
-	file, _ := os.Open(configFilePath)
-	decoder := json.NewDecoder(file)
-	configuration := Configuration{}
-	err := decoder.Decode(&configuration)
-	if err != nil {
-		fmt.Println("error parsing config", configFilePath, err)
-		os.Exit(1)
-	}
+	configuration := readConfiguration(configFilePath)
 
+	// start catching signals early
 	c := make(chan os.Signal, 1)
 	signal.Notify(c)
 
@@ -76,6 +102,7 @@ func main() {
 		go waitFor(name, cmd, routineQuit)
 	}
 
+	// catch any and all signals and forward them to all child commands
 	go func() {
 		s := <-c
 		fmt.Println("Got signal", s, "sending along")
@@ -84,13 +111,11 @@ func main() {
 		}
 	}()
 
+	// if anything dies kill the rest and then exit ourselves
 	ret := <-routineQuit
 	fmt.Println("Killing everything and shutting down")
-
-	// if anything dies kill the rest and then exit ourselves
 	for _, cmd := range cmds {
 		cmd.Process.Signal(os.Kill)
 	}
-
 	os.Exit(ret)
 }

@@ -3,5 +3,5 @@ This is a program that runs multiple configured programs and forwards the signal
 
 Running the example
 ```
-go run bifurcate.go resources/demo.json
+BABY_NAME=quinn go run bifurcate.go resources/demo.json
 ```
