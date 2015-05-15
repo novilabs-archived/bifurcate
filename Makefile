@@ -14,7 +14,7 @@ package: build
 	$(eval FILES := $(shell ls build))
 	@mkdir -p build/tgz
 	for f in $(FILES); do \
-		(cd $(shell pwd)/build && tar -zcvf tgz/$$f.tar.gz $$f); \
+		(cd $(shell pwd)/build/$$f && tar -zcvf ../tgz/$$f.tar.gz bifurcate); \
 		echo $$f; \
 	done
 
