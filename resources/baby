@@ -2,7 +2,7 @@
 set -eou pipefail
 
 for i in $(seq 10 -1 0); do
-	echo "ZZzzz $i"
+	>&2 echo "ZZzzz $i"
 	sleep 1
 done
 
