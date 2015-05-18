@@ -70,7 +70,7 @@ func waitFor(name string, requires []ConfigurationProgramRequires, cmd *exec.Cmd
 				quit <- 1
 			}
 		} else {
-			fmt.Println("Error not exit err for", name)
+			fmt.Println("Error command error was not 'exit err' for", name, err)
 			quit <- 1
 		}
 	} else {
