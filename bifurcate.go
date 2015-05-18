@@ -146,7 +146,9 @@ func main() {
 		s := <-c
 		fmt.Println("Got signal", s, "sending along")
 		for _, cmd := range cmds {
-			cmd.Process.Signal(s)
+			if cmd.Process != nil {
+				cmd.Process.Signal(s)
+			}
 		}
 	}()
 
@@ -154,7 +156,9 @@ func main() {
 	ret := <-routineQuit
 	fmt.Println("Killing everything and shutting down")
 	for _, cmd := range cmds {
-		cmd.Process.Signal(os.Kill)
+		if cmd.Process != nil {
+			cmd.Process.Signal(os.Kill)
+		}
 	}
 	os.Exit(ret)
 }
