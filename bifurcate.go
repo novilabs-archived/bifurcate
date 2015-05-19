@@ -70,7 +70,7 @@ func waitFor(name string, requires []ConfigurationProgramRequires, cmd *exec.Cmd
 				quit <- 1
 			}
 		} else {
-			fmt.Println("Error not exit err for", name)
+			fmt.Println("Error command error was not 'exit err' for", name, err)
 			quit <- 1
 		}
 	} else {
@@ -146,7 +146,9 @@ func main() {
 		s := <-c
 		fmt.Println("Got signal", s, "sending along")
 		for _, cmd := range cmds {
-			cmd.Process.Signal(s)
+			if cmd.Process != nil {
+				cmd.Process.Signal(s)
+			}
 		}
 	}()
 
@@ -154,7 +156,9 @@ func main() {
 	ret := <-routineQuit
 	fmt.Println("Killing everything and shutting down")
 	for _, cmd := range cmds {
-		cmd.Process.Signal(os.Kill)
+		if cmd.Process != nil {
+			cmd.Process.Signal(os.Kill)
+		}
 	}
 	os.Exit(ret)
 }
