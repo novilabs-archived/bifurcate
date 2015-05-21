@@ -132,6 +132,9 @@ func main() {
 		}
 	}
 
+	if os.Getppid() != 0 {
+		fmt.Println("I am PID", os.Getpid(), "it would be better if I was PID 1")
+	}
 	// run them
 	for name, program := range configuration.Programs {
 		cmdArgs := program.Args
