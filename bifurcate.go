@@ -146,11 +146,13 @@ func main() {
 
 	// catch any and all signals and forward them to all child commands
 	go func() {
-		s := <-c
-		fmt.Println("Got signal", s, "sending along")
-		for _, cmd := range cmds {
-			if cmd.Process != nil {
-				cmd.Process.Signal(s)
+		for {
+			s := <-c
+			fmt.Println("Got signal", s, "sending along")
+			for _, cmd := range cmds {
+				if cmd.Process != nil {
+					cmd.Process.Signal(s)
+				}
 			}
 		}
 	}()
