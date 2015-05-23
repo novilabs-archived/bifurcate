@@ -40,7 +40,9 @@ Sometimes you want programs to run in a specific order, maybe one is generating 
 ```json
 {
   "programs": {
-    "consul-template": { "args": ["consul-template", "-template", "/config.conf.ctmpl:/config.conf"] },
+    "consul-template": { 
+     "args": ["consul-template", "-template", "/config.conf.ctmpl:/config.conf"] 
+    },
     "myapp": {
       "requires": [{"file": "/config.cong"}],
       "args": ["myapp", "-config", "/config.conf"]
