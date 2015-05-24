@@ -50,7 +50,7 @@ Sometimes you want programs to run in a specific order, maybe one is generating 
   }
 }
 ```
-In this example we are running [`consul-template`](https://github.com/hashicorp/consul-template) to get and keep a configuration file up to date for our application. We do not want the application to start up until the configuration file exists so we tell the program that it `requires` a `file` at a specified location to exist. This way even if consul template starts up well, we waiting until it successfully writes out the file to start our application.
+In this example we are running [`consul-template`](https://github.com/hashicorp/consul-template) to get and keep a configuration file up to date for our application. We do not want the application to start up until the configuration file exists so we tell the program that it `requires` a `file` at a specified location to exist. This way even once consul template starts up, `bifurcate` waits until the config file exists to start our application.
 
 * * *
 ### Running the example.
