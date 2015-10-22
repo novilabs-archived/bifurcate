@@ -20,4 +20,3 @@ package: build
 
 install-gox:
 	go get github.com/mitchellh/gox
-	gox -build-toolchain
