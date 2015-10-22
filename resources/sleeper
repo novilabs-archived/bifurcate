@@ -1,7 +1,9 @@
 #!/bin/bash
 set -eou pipefail
+DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 while :; do
+  $DIR/zombie
   date
   sleep 1
 done
