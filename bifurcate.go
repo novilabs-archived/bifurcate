@@ -132,9 +132,10 @@ func main() {
 		}
 	}
 
-	if os.Getppid() != 0 {
-		fmt.Println("I am PID", os.Getpid(), "it would be better if I was PID 1")
+	if os.Getpid() != 1 {
+		fmt.Println("I am PID", os.Getpid(), "it would be better if I was PID 1, I am not going to pick up defunct pids")
 	}
+
 	// run them
 	for name, program := range configuration.Programs {
 		cmdArgs := program.Args
@@ -153,6 +154,20 @@ func main() {
 				if cmd.Process != nil {
 					cmd.Process.Signal(s)
 				}
+			}
+		}
+	}()
+
+	// reap defunct pids
+	go func() {
+		var wstatus syscall.WaitStatus
+		for {
+			pid, err := syscall.Wait4(-1, &wstatus, 0, nil)
+			if err != nil {
+				fmt.Println("syscall warning:", err)
+				time.Sleep(100 * time.Millisecond)
+			} else {
+				fmt.Println("Reaping defunct PID", pid)
 			}
 		}
 	}()
