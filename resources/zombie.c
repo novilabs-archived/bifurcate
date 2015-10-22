@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -9,12 +8,8 @@ int main ()
 
   child_pid = fork ();
   if (child_pid > 0) {
-    sleep (60);
+    return 0;
+  } else {
+    return 0;
   }
-  else {
-    printf ("in parent");
-    exit (0);
-  }
-  printf ("finished");
-  return 0;
 }
