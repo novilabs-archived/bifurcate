@@ -9,6 +9,8 @@ There are many alternatives such as [supervisord](http://supervisord.org/), [sys
 
 `bifurcate` is attempting to pretend that it is just one process so kills everything if any process dies, and will forward all signals to the underlying processes.
 
+Also phusion talks about the [PID 1 zombie reading problem](https://blog.phusion.nl/2015/01/20/docker-and-the-pid-1-zombie-reaping-problem/) which can occur in a docker container that does not have a proper init system. As long as bifurcate is PID 1 then it will also reap these defunct/zombie processes.
+
 * * *
 ### Configuration
 Configuration is done in [json](http://json.org/). This is easy to have structure, and is natively supported by go, so does not require adding any more dependencies.
