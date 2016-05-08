@@ -46,7 +46,7 @@ Sometimes you want programs to run in a specific order, maybe one is generating 
       "args": ["consul-template", "-template", "/config.conf.ctmpl:/config.conf"] 
     },
     "myapp": {
-      "requires": [{"file": "/config.cong"}],
+      "requires": [{"file": "/config.conf"}],
       "args": ["myapp", "-config", "/config.conf"]
     }
   }
