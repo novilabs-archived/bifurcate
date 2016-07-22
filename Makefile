@@ -1,6 +1,6 @@
 .PHONY: build
 NAME = bifurcate
-VERSION = 0.5.0-dev
+VERSION = 0.5.0
 
 build: install-gox
 	@rm -rf build/
