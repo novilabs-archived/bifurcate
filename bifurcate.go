@@ -174,11 +174,36 @@ func main() {
 
 	// if anything dies kill the rest and then exit ourselves
 	ret := <-routineQuit
-	fmt.Println("Killing everything and shutting down")
+
+	fmt.Println("Interrupt everything")
 	for _, cmd := range cmds {
 		if cmd.Process != nil {
-			cmd.Process.Signal(os.Kill)
+			cmd.Process.Signal(os.Interrupt)
 		}
 	}
+
+	// wait then kill everything
+	go func() {
+		time.Sleep(60 * time.Second)
+		fmt.Println("Killing everything and shutting down")
+		for _, cmd := range cmds {
+			if cmd.Process != nil {
+				cmd.Process.Signal(os.Kill)
+			}
+		}
+		os.Exit(1)
+	}()
+
+	// wait for everything to have died
+	for i := 0; i < len(cmds) - 1; i++ {
+		ret = max(ret, <-routineQuit)
+	}
 	os.Exit(ret)
+}
+
+func max(a, b int) int {
+	if a < b {
+		return b
+	}
+	return a
 }
